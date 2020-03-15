@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>天天生鲜-注册</title>
+    {% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+{#	<script type="text/javascript" src="{% static 'js/register.js' %}"></script>#}
+    <style type="text/css">
+        .red{color:red}
+        .green{color:green}
+        .wrong{color:red}
+        .right{color:green}
+    </style>
+</head>
+<body>
+	<div class="register_con">
+		<div class="l_con fl">
+			<a class="reg_logo"><img src="{% static 'images/logo02.png' %}"></a>
+			<div class="reg_slogan">足不出户  ·  新鲜每一天</div>
+			<div class="reg_banner"></div>
+		</div>
+
+		<div class="r_con fr">
+			<div class="reg_title clearfix">
+				<h1>用户注册</h1>
+				<a href="{% url 'login' %}">登录</a>
+			</div>
+			<div class="reg_form clearfix">
+				<form method="post">
+				<ul>
+					<li>
+                        <label>用户名:</label>
+                        <input type="text" name="user_name" id="user_name" class="required" autocomplete="off">
+{#                        <span class="error_tip">提示信息</span>#}
+                        <span id="username_err"></span>
+					</li>
+					<li>
+						<label>密码:</label>
+						<input type="password" name="pwd" id="pwd" class="required">
+{#						<span class="error_tip">提示信息</span>#}
+					</li>
+					<li>
+						<label>确认密码:</label>
+						<input type="password" name="cpwd" id="cpwd" class="required">
+{#						<span class="error_tip">提示信息</span>#}
+					</li>
+					<li>
+						<label>邮箱:</label>
+						<input type="text" name="email" id="email" class="required" autocomplete="off">
+{#						<span class="error_tip">提示信息</span>#}
+					</li>
+					<li class="agreement">
+						<input type="checkbox" name="allow" id="allow" checked="checked">
+						<label>同意”天天生鲜用户使用协议“</label>
+						<span class="error_tip2">提示信息</span>
+					</li>
+					<li class="reg_sub">
+						<input type="submit" value="注 册" name="" id="send">
+					</li>
+				</ul>
+				</form>
+			</div>
+            <span style="color: red">{{ err }}</span>
+		</div>
+
+	</div>
+
+	<div class="footer no-mp">
+		<div class="foot_link">
+			<a href="#">关于我们</a>
+			<span>|</span>
+			<a href="#">联系我们</a>
+			<span>|</span>
+			<a href="#">招聘人才</a>
+			<span>|</span>
+			<a href="#">友情链接</a>
+		</div>
+		<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>
+		<p>电话：010-****888    京ICP备*******8号</p>
+	</div>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script>
+        $(function () {
+            console.log('加载成功,验证用户名....');
+
+            $('#user_name').change(function () {
+                console.log('名字:'+$(this).val());
+                var user_name = $(this).val();
+                var judge = /^[a-zA-Z0-9_-]{5,16}$/;
+                $.ajax({
+                    type: "GET",
+                    url: "http://127.0.0.1:8000/yanzheng/",
+			        data: "user_name="+user_name,
+			        dataType:"json",
+                    success:function(con){
+                        if (user_name = '' || judge.test(user_name) == false){
+                            $('#username_err').html('用户名为5-16位').removeClass('green').addClass('red')
+                        }else if (con.result == 'false'){
+                            $('#username_err').html('被占用').removeClass('green').addClass('red')
+                        }else {
+                            $('#username_err').html('可用').removeClass('red').addClass('green')
+                        }
+                    },
+                    error:function (msg) {
+                        console.log(msg);
+                        console.log('状态码:'+msg.status);
+                        console.log('提示'+msg.responseText);
+                    }
+                })
+            });
+
+            {#表单验证#}
+            $('form :input').change(function () {
+                $(this).parent().find('.right').remove();
+                $(this).parent().find('.wrong').remove();
+
+                //验证密码
+                if($(this).is('#pwd')){
+                    // console.log("密码必须4-6位");
+                    var pwd = $(this).val();
+                    var pwds = /^[a-zA-Z0-9_-]{6,16}$/;
+                    if(pwd=='' || pwds.test(pwd)==false ){
+                        $(this).after("<span class='wrong'>密码必须在6-16个字符之间</span>")
+                    }else{
+                        $(this).after("<span class='right'>可用</span>")
+                    }
+                };
+                //验证两次密码是否一致
+                if($(this).is('#cpwd')){
+                    // console.log("密码必须4-6位");
+                    var pwd = $('#pwd').val();
+                    var cpwd =$(this).val();
+                    var pwds = /^[a-zA-Z0-9_-]{6,16}$/;
+                    if(cpwd=='' || pwds.test(cpwd)==false || cpwd != pwd ){
+                        $(this).after("<span class='wrong'>两次密码输入不一致</span>")
+                    }else{
+                        $(this).after("<span class='right'>可用</span>")
+                    }
+                };
+                // 验证邮箱
+                if($(this).is('#email')){
+                    // console.log("密码必须4-6位");
+                    var email = $(this).val();
+                    var emails = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+                    if(email == '' || emails.test(email)==false ){
+                        $(this).after("<span class='wrong'>邮箱格式不正确</span>")
+                    }else{
+                        $(this).after("<span class='right'>可用</span>")
+                    }
+                };
+                //用户是否勾选
+                {#if($(this).is('#allow')){#}
+                {#    if($(this)==''){#}
+                {#        $(this).after("<span class='right'>正确</span>")#}
+                {#    }else{#}
+                {#        $(this).after("<span class='wrong'>请勾选同意</span>")#}
+                {#    }#}
+                {#}#}
+
+            })
+
+            //提交事件
+            $('form').submit(function(event) {
+
+                var user_names = /^[a-zA-Z0-9_-]{5,16}$/;
+                var pwds = /^[a-zA-Z0-9_-]{6,16}$/;
+                var emails = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+
+                var user_name = $('#user_name').val();
+                var pwd = $('#pwd').val();
+                var cpwd = $('#cpwd').val();
+                var email = $('#email').val();
+                //默认提交
+                flag = true;
+                //alert('点提交了....');
+                //如果一个不合法 flag=false.自动不跳转
+                $("form :input.required").each(function(){
+                    if($(this).val()=='' || user_names.test(user_name) == false || pwds.test(pwd) == false || cpwd != pwd || emails.test(email) == false){
+                        flag = false;
+                    }
+                });
+                if(flag==false){
+                    alert('请输入正确格式!')
+                }
+                return flag;
+            });
+
+        })
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>天天生鲜-注册</title>
+    {% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+{#	<script type="text/javascript" src="{% static 'js/register.js' %}"></script>#}
+    <style type="text/css">
+        .red{color:red}
+        .green{color:green}
+        .wrong{color:red}
+        .right{color:green}
+    </style>
+</head>
+<body>
+	<div class="register_con">
+		<div class="l_con fl">
+			<a class="reg_logo"><img src="{% static 'images/logo02.png' %}"></a>
+			<div class="reg_slogan">足不出户  ·  新鲜每一天</div>
+			<div class="reg_banner"></div>
+		</div>
+
+		<div class="r_con fr">
+			<div class="reg_title clearfix">
+				<h1>修改密码</h1>
+				<a href="{% url 'login' %}">登录</a>
+			</div>
+			<div class="reg_form clearfix">
+				<form method="post">
+                    <ul>
+                        <li><input type="password" id="opwd" name="opwd" placeholder="请输入原始密码"></li>
+                        <li><input type="password" id="npwd" name="npwd" placeholder="请输入新密码"></li>
+
+
+                        <li><input type="text" name="phone" id="phone" class="required" placeholder="请输入手机号" /></li>
+                        <li><input type="text" name="smscode" id="smscode" value="" class="required" placeholder="请输入验证码" />
+                        <button type="submit" id="sendsms">发送验证码</button>
+                        </li>
+                        <li><input type="submit" value="确认修改"></li>
+
+                    </ul>
+                </form>
+			</div>
+            <span style="color: red">{{ err }}</span>
+		</div>
+
+	</div>
+
+ <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+
+<script>
+//短信验证
+$(function(){
+	$("#smscode").change(function(){
+		console.log('开始验证.....')
+		//1 获取phone和验证码
+		var phone = $("#phone").val()
+		var code = $(this).val()
+		// 2 ajax
+		$.ajax({
+			type:'get',
+			url:'/a/',
+			data:'phone='+phone+'&code='+code,
+			success:function(msg){
+				//结果已经统一规整为json对象了,不需要转换了
+				console.log('结果就是对象'+typeof(msg))
+				if(msg.code=='200'){
+					$('#msg').html('验证码正确')
+				}else{
+					$('#msg').html('验证码输入错误')
+				}
+			},
+			error:function(resp){
+				console.log(resp.status)
+				alert('连接服务器失败')
+			}
+		})
+	})
+})
+//end 短信验证
+</script>
+
+ <script>
+$(function(){
+
+//短信验证码
+//1. 找标签:btn1
+//2. 定时器完成: 显示时间变化!!!
+//setInterval(函数, 时间)
+//3.难点: 定时器中函数,不断减1, 见到<0终止!!!!
+ var btn1 = $('#sendsms')
+ var count=5; // 倒计时数量 一般为60秒!
+ var timer =null; //定时器
+ //事件
+btn1.click(function(){
+ 	phone = $('#phone').val()
+ 	if(phone==''){
+ 		alert('请输入电话号码')
+ 		return false;
+ 	}
+	//Ajax发送短信
+	$.ajax({
+		type:'get',
+		url:'/send_sms/',
+		data:'phone='+phone,
+		success:function(msg){
+			console.log("成功返回结果:"+msg)
+			obj = eval("("+msg+")")
+			if(obj.Message=="OK"){
+				$("#msg").html("发送成功")
+			}else{
+				$("#msg").html("发送失败")
+			}
+		},
+		error:function(resp){
+			console.log(resp.status)
+			alert('连接后台失败')
+		}
+	})
+	//end 发送短信
+
+
+ 	//禁用
+ 	$(this).attr("disabled",'true')
+ 	var this2=  $(this);
+ 	//定时器实现时间每次减少1
+ 	timer = setInterval(function(){
+
+ 		console.log("剩余时间:"+count);
+ 		if(count>=0){
+ 			count--;
+ 			//this表示对象!!!! 表示定时器!!!!
+ 			//this.innerHTML="时间剩余"+ count+"秒";
+ 			this2.val(count+"秒s后重发")
+ 		}else{
+ 			this2.disabled = false;
+ 			clearInterval(timer);
+ 			this2.html("重新发送")
+ 			count=5
+ 			$('#sendsms').removeAttr("disabled")
+ 		}
+	 },1000);
+})
+//短信验证end
+
+    //提交事件
+    $('form').submit(function (event) {
+        var phone = $('#phone').val();
+        var sendsms = $('#sendsms').val();
+        var smscode = $('#smscode').val();
+
+        //默认提交
+        flag = true;
+        //如果一个不合法 flag = false自动不跳转
+        $('form :input.required').each(function () {
+            if($(this).val()==''){
+                flag = false;
+            }
+        });
+        if(flag==false){
+            alert('请输入正确格式！')
+        }
+        return flag;
+    });
+})
+</script>
+
+</body>
+</html>

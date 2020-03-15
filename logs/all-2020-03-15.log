@@ -1,0 +1,9 @@
+[2020-03-15 17:35:37,399] [autoreload.py:598] [autoreload:run_with_reloader] [INFO]- Watching for file changes with StatReloader
+[2020-03-15 17:36:10,547] [autoreload.py:598] [autoreload:run_with_reloader] [INFO]- Watching for file changes with StatReloader
+[2020-03-15 17:36:12,323] [basehttp.py:157] [basehttp:log_message] [INFO]- "GET / HTTP/1.1" 200 151
+[2020-03-15 17:36:12,461] [basehttp.py:157] [basehttp:log_message] [INFO]- "GET /favicon.ico HTTP/1.1" 200 110
+[2020-03-15 17:36:16,692] [basehttp.py:157] [basehttp:log_message] [INFO]- "GET /111 HTTP/1.1" 200 110
+[2020-03-15 17:36:16,735] [basehttp.py:157] [basehttp:log_message] [INFO]- "GET /favicon.ico HTTP/1.1" 200 110
+[2020-03-15 17:36:31,104] [basehttp.py:157] [basehttp:log_message] [INFO]- "GET /df5 HTTP/1.1" 200 110
+[2020-03-15 17:36:31,139] [basehttp.py:157] [basehttp:log_message] [INFO]- "GET /favicon.ico HTTP/1.1" 200 110
+[2020-03-15 19:01:18,105] [autoreload.py:598] [autoreload:run_with_reloader] [INFO]- Watching for file changes with StatReloader
